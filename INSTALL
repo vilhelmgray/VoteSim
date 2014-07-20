@@ -1,0 +1,26 @@
+Copyright (c) 2012, William Breathitt Gray
+See the LICENSE file for license conditions.
+
+VoteSim was written in Standard C (ISO/IEC 9899:1999) and should build
+on any system with a compliant compiler. A Makefile is provided in the
+source root directory of the release as a convenience.
+
+To build this release of VoteSim on your system use:
+
+    # make
+
+The main executable will be built in the current directory. To run use:
+
+    # ./votesim
+
+To clean the directory of build files use:
+
+    # make clean
+
+A Doxygen configuration file is provided to generate the Doxygen
+documentation for this release. To generate Doxygen documentation use:
+
+    # doxygen Doxyfile
+
+By default, documentation is generated as HTML in the doc/html directory
+within the source root directory.

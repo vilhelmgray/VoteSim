@@ -1,0 +1,248 @@
+========================================================================
+                                VoteSim
+========================================================================
+Simulates various types of elections for statistical analysis.
+------------------------------------------------------------------------
+Author:      William Breathitt Gray
+Date:        October 19, 2012
+Version:     1.0
+Copyright:   Simplified BSD License
+ 
+Language:    C
+Standard:    C99
+Doc System:  Doxygen
+------------------------------------------------------------------------
+Copyright (c) 2012, William Breathitt Gray
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+========================================================================
+========================================================================
+
+
+-------------------
+ Table of Contents
+-------------------
+I.      Theory
+II.     Usage
+III.    Output
+IV.     Reflections
+V.      Contact
+
+
+-----------
+ I. Theory
+-----------
+VoteSim simulates three main types of elections: traditional, hitler,
+and two-party system. A traditional election is a customary democractic
+election where the winners are the candidates who receive the most
+votes. A hitler election is an inverse election, where the winners are
+the candidates who receive the least votes. A two-party system election
+is a traditional election where the each vote is cast to either of the
+two most popular candidates (i.e. voters are forced to choose between
+the two most popular candidates rather than than a third party).
+
+In every election there are voters. Each voter subscribes to a specific
+permutation of stances on common issues shared by all voters. These
+permutation of stances form a platform -- also known as a candidate
+within the VoteSim simulation. Each candidate (platform) is a unique
+permutation of stances on the same number of common issues.
+
+For example, suppose there are four common issues in an election:
+
+                +--------------------------------------+
+                | Candidate ID |          12           |
+                +--------------+-----+-----+-----+-----+
+                |   Issue #    |  3  |  2  |  1  |  0  |
+                +--------------+-----+-----+-----+-----+
+                |    Stance    |  1  |  1  |  0  |  0  |
+                +--------------+-----+-----+-----+-----+
+
+There are two possible stances: 0 or 1 ("for" or "against"). So
+candidate 12 would have a stance of 1 on issue #2, a stance of 0 on
+issue #0, and so on. When the stances are put together in order as a
+string, they form a binary number: 1100; thus the candidate's ID is the
+decimal representation of the candidate's permutation of stances.
+
+For each election, voters are allocated randomly to the candidates. For
+any given election, the number of candidates with votes may vary since
+some candidates may have no votes at all. Similarly, since the
+distribution of voters is random, approval ratings and other statistics
+often differ from election to election.
+
+The approval rating of a candidate is calculated as the average percent
+agreement voters with the candidate. Similarly, the pro-contra ratio
+represents the ratio of voters overall for the candidate over those
+voters who are overall against the candidate (and vice versa) to the
+total number of voters. The medius ratio represents the ratio of voters
+who agree with exactly half of the candidate's stances to the total
+number of voters; the medius ratio will be 0.00 if the number of issues
+is odd since exact half agreement is impossible.
+
+For example, suppose there are 100 voters in an election:
+
+    * 45 voters agree with more than half of the candidate's stances
+    * 6 voters agree with less than half of the candidate's stances
+    * 49 voters agree with exactly half of the candidate's stances
+
+    => 45 - 6 = 39
+    => 39 / 100 = 0.39 <-- pro-contra ratio with overall pro
+    => 49 / 100 = 0.49 <-- medius ratio
+
+The washington candidate is derived from the average stances of the
+voters on all the common issues. For example, if 50% or more voters are
+have a stance of 1 on issue #3, then the washington candidate will have
+a stance of 1 on issue #3 (less than half will result in a stance of 0).
+Note that this means the washington candidate does not necessarily have
+to have recieved any votes in the traditional election since the
+washington candidate is derived from the voters' stances from the
+traditional election.
+
+
+-----------
+ II. Usage
+-----------
+To build from source, use the Makefile in the source root directory:
+
+    # make
+
+For more specific build instructions, refer to the INSTALL file in the
+source root directory.
+
+Execute the votesim file to run the main program:
+
+    # ./votesim
+
+VoteSim will present several prompts for input to configure the election
+simulations; an input of 0 for any prompt will exit the program.
+
+NOTE: To print election data to a file, additional code must be added at
+line 362 in the votesim.c file.
+
+
+-------------
+ III. Output
+-------------
+The election output is laid out as such in descending number of votes:
+
+    ID: Approval% (Pro-Contra Medius) [Hitler] ElectionVotes HitlerVotes
+
+Election output example:
+
+    9: 48.44% (C0.19 0.44) [14] 2 0
+
+Candidate 9 has a 48.44% approval with the voters. The pro-contra ratio
+has a 'P' or a 'C' prefix to denote the overall trend, so candidate 9
+has a pro-contra ratio of 0.19 with voters overall against the
+candidate; the 0.44 represents the medius ratio. The hitler candidate
+is the traditional election candidate which most differs from the
+current candidate. The last two values respectively are the number of
+votes received in the traditional election and the number of votes
+received in the hitler election.
+
+Following the election output is the winners output where the winners of
+the elections are displayed, as well as the washington candidate. The
+Traditional Election Winners, Approval Winners, and Hitler Election
+Winners all follow the format of the election output section.
+
+The washington candidate output is laid out as such:
+
+    > ID: Approval% (Pro-Contra Medius) [Hitler] {TrueHitler}
+
+Washington Candidate output example:
+
+    > 8: 64.06% (P0.56 0.44) [14]{7}
+
+The ID, approval rating, ratios, and hitler candidate are calculated as
+before. However, the last value represents the binary inversion of the
+current candidate's platform, thus representing the polar opposite
+candidate to the current candidate.
+
+The Two-Party System output is laid out as such:
+
+    Rank) ID: Approval% (Pro-Contra Medius) Votes VoteRatio
+
+Two-Party System output example:
+
+    2) 14: 51.56% (C0.25 0.00) 6 0.38
+
+The ID, approval rating, and ratios are calculated as before. For any
+given set of voters, votes are allocated to the candidate with the
+higher approval rating (the lesser of two evils); if the voters are
+undecided (both approval ratings are equal), then their votes are not
+counted. As such, the number of votes between the two candidates may not
+add up to the number of voters. The last value in the output represents
+the ratio of votes to the number of voters.
+
+
+-----------------
+ IV. Reflections
+-----------------
+While testing and debugging VoteSim, I noticed several trends appear in
+the election simulation.
+
+The hitler election method seemed to be the most unreliable in selecting
+candidates with high approval and/or high pro-leaning pro-contra ratios.
+The implementation may be a factor in this outcome as candidates are
+only able to have one hitler candidate, while multiple may exist with
+the same low approval rating. It would be interesting to see what occurs
+if multiple votes are allowed in the hitler election (perhaps voting for
+all hitler candidates for the respective candidate, or all candidates
+who have a contra-leaning pro-contra ratio).
+
+Although the traditional election often results in a winner with the
+highest approval rating, in several cases the approval winner lost
+significantly in the traditional election. Furthermore, the two-party
+system election would at time result in the runner-up of the traditional
+winning the election, despite having a lower approval rating than the
+other candidate.
+
+Interestingly, the washington candidate consistently had the highest
+approval rating in any election; although, it does not always have the
+highest pro-leaning pro-contra ratio.
+
+As a final word regarding real-life elections, the VoteSim simulations
+do not directly describe the socio-political environments and results of
+the elections. For example, while the washington candidate indicates
+that voting directly on issues would result in a higher average approval
+than voting on representatives, this method would become too
+time-consuming on a large scale such as running a nation (involving a
+vast number of issues). In addition, while the pro-contra ratio gives a
+glimpse of the portions of the population for/against the candidate,
+even a small portion of voters whose platforms signficantly differ from
+the winner -- or perhaps have suffered from the inherent problems of mob
+rule for some time -- may resort to violence and coercion to have their
+platform followed, despite the election winner having a high average
+approval rating.
+
+
+------------
+ V. Contact
+------------
+Send bug reports, feature requests, and salutations to:
+
+    vilhelm.gray@gmail.com
+
+Feel free to send a message about anything you find interesting or if
+you just want to talk. The life of a FOSS developer can get rather
+lonely at times. :)
